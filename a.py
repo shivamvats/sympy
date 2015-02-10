@@ -1,4 +1,7 @@
+print "import"
+from timeit import default_timer as clock
 from sympy import S
+print "done"
 
 class FormalPowerSeries(object):
     """
@@ -93,17 +96,35 @@ def div(a, b):
     """
     return mul(a, pow_m1(b))
 
+n = 200
 # sin(x)
-sin = FormalPowerSeries([0, 1, 0, -S(1)/6, 0, S(1)/120, 0, -S(1)/5040, 0,
-    S(1)/362880, 0])
+data = [0]
+t = S(1)
+print "0"
+for i in range(1, n):
+    t = t/i
+    if i % 2 == 0:
+        data.append(0)
+        t = -t
+    else:
+        data.append(t)
+sin = FormalPowerSeries(data)
 # cos(x)
-cos = FormalPowerSeries([1, 0, -S(1)/2, 0, S(1)/24, 0, -S(1)/720, 0,
-    S(1)/40320, 0])
-x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
-onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-print sin
-print cos
-print mul(sin, cos)
-print add(sin, cos)
-print mul(sin, x)
-print div(sin, cos)
+data = [1]
+t = S(1)
+for i in range(1, n):
+    t = t/i
+    if i % 2 == 1:
+        data.append(0)
+        t = -t
+    else:
+        data.append(t)
+cos = FormalPowerSeries(data)
+#x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
+#onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+print "4"
+t1 = clock()
+s = mul(sin, cos)
+t2 = clock()
+#print s
+print t2-t1
