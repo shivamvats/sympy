@@ -38,13 +38,30 @@ class FormalPowerSeries(object):
     def __init__(self, data):
         # _data = [a0, a1, a2, ...]
         self._data = [S(x) for x in data]
-        pass
 
     def __str__(self):
         s = ""
         for i in range(len(self._data)):
             if self._data[i] != 0:
                 s += "(%s)*X^%d + " % (self._data[i], i)
+        return s[:-3]
+
+class FormalPowerSeriesSparse(object):
+
+    def __init__(self, data):
+        # Only non-zero elements are stored
+        # _data = {0: a0, 1: a1, 2: a2, ...}
+        self._data = {}
+        for n, x in enumerate(data):
+            y = S(x)
+            if y != 0: self._data[n] = y
+
+    def __str__(self):
+        items = list(self._data.items())
+        items.sort(key=lambda e: e[0])
+        s = ""
+        for e, c in items:
+            s += "(%s)*X^%d + " % (c, e)
         return s[:-3]
 
 def add(a, b):
@@ -73,6 +90,23 @@ def mul(a, b):
             s = s + a._data[j]*b._data[n-j]
         cdata[n] = s
     return FormalPowerSeries(cdata)
+
+def mul_sparse(p1, p2, prec):
+    """
+    Multiplies two series (a*b). The order is determined by the shorter one.
+    """
+    items2 = list(p2._data.items())
+    items2.sort(key=lambda e: e[0])
+    p = {}
+    get = p.get
+    for exp1, v1 in p1._data.items():
+        for exp2, v2 in items2:
+            exp = exp1 + exp2
+            if exp < prec:
+                p[exp] = get(exp, 0) + v1*v2
+            else:
+                break
+    return p
 
 def pow_m1(a):
     """
