@@ -29,6 +29,7 @@ def rs_mul(p1, p2, x, prec):
                 else:
                     break
         t2 = clock()
+        print t2-t1
 
 R, x = ring('x', QQ)
 
