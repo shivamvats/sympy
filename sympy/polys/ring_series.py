@@ -100,7 +100,7 @@ def rs_mul(p1, p2, x, prec):
     """
 
     ring = p1.ring
-    p = ring.zero
+    p = {}
     if ring.__class__ != p2.ring.__class__ or ring != p2.ring:
         raise ValueError('p1 and p2 must have the same ring')
     iv = ring.gens.index(x)
@@ -134,6 +134,9 @@ def rs_mul(p1, p2, x, prec):
                     else:
                         break
 
+    pold = p
+    p = ring.zero
+    p.update(pold)
     p.strip_zero()
     return p
 
