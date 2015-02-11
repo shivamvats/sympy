@@ -84,11 +84,14 @@ def mul(a, b):
     bn = len(b._data)
     cn = min(an, bn)
     cdata = [0]*cn
+    t1 = clock()
     for n in range(cn):
         s = 0
         for j in range(n+1):
             s = s + a._data[j]*b._data[n-j]
         cdata[n] = s
+    t2 = clock()
+    print t2-t1
     return FormalPowerSeries(cdata)
 
 def mul_sparse(p1, p2, prec):
