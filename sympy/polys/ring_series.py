@@ -107,10 +107,12 @@ def rs_mul(p1, p2, x, prec):
         raise ValueError('p1 and p2 must have the same ring')
     if ring == p2.ring:
         get = p.get
+        items1 = list(p1.items())
+        items1.sort(key=lambda e: e[0][iv])
         items2 = list(p2.items())
         items2.sort(key=lambda e: e[0][iv])
         if ring.ngens == 1:
-            for exp1, v1 in p1.items():
+            for exp1, v1 in items1:
                 for exp2, v2 in items2:
                     exp = exp1[0] + exp2[0]
                     if exp < prec:
