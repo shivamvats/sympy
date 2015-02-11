@@ -160,19 +160,19 @@ t = S(1)
 for i in range(1, n):
     t = t/i
     data.append(t)
-exp = FormalPowerSeries(data)
+exp = FormalPowerSeriesSparse(data)
 # log(1+x)
 data = [0]
 t = S(1)
 for i in range(1, n):
     data.append(t/i)
     t = -t
-log = FormalPowerSeries(data)
+log = FormalPowerSeriesSparse(data)
 #x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
 #onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 print "4"
 t1 = clock()
-s = mul(log, exp)
+s = mul_sparse(log, exp, n)
 t2 = clock()
 #print s
 print t2-t1
