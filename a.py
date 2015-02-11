@@ -1,6 +1,6 @@
 print "import"
 from timeit import default_timer as clock
-from sympy import S
+from sympy.polys.domains.pythonrational import PythonRational as S
 print "done"
 
 class FormalPowerSeries(object):
