@@ -95,11 +95,13 @@ def mul_sparse(p1, p2, prec):
     """
     Multiplies two series (a*b). The order is determined by the shorter one.
     """
+    items1 = list(p1._data.items())
+    items1.sort(key=lambda e: e[0])
     items2 = list(p2._data.items())
     items2.sort(key=lambda e: e[0])
     p = {}
     get = p.get
-    for exp1, v1 in p1._data.items():
+    for exp1, v1 in items1:
         for exp2, v2 in items2:
             exp = exp1 + exp2
             if exp < prec:
