@@ -37,7 +37,12 @@ class FormalPowerSeries(object):
 
     def __init__(self, data):
         # _data = [a0, a1, a2, ...]
-        self._data = [S(x) for x in data]
+        self._data = []
+        for x in data:
+            if isinstance(x, S):
+                self._data.append(x)
+            else:
+                self._data.append(S(x))
 
     def __str__(self):
         s = ""
@@ -53,7 +58,10 @@ class FormalPowerSeriesSparse(object):
         # _data = {0: a0, 1: a1, 2: a2, ...}
         self._data = {}
         for n, x in enumerate(data):
-            y = S(x)
+            if isinstance(x, S):
+                y = x
+            else:
+                y = S(x)
             if y != 0: self._data[n] = y
 
     def __str__(self):
