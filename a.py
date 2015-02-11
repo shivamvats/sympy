@@ -146,7 +146,7 @@ def div(a, b):
     """
     return mul(a, pow_m1(b))
 
-n = 200
+n = 400
 # sin(x)
 data = [0]
 t = S(1)
@@ -158,7 +158,7 @@ for i in range(1, n):
         t = -t
     else:
         data.append(t)
-sin = FormalPowerSeries(data)
+sin = FormalPowerSeriesSparse(data)
 # cos(x)
 data = [1]
 t = S(1)
@@ -169,26 +169,27 @@ for i in range(1, n):
         t = -t
     else:
         data.append(t)
-cos = FormalPowerSeries(data)
+cos = FormalPowerSeriesSparse(data)
 # exp(x)
 data = [1]
 t = S(1)
 for i in range(1, n):
     t = t/i
     data.append(t)
-exp = FormalPowerSeriesSparse(data)
+exp = FormalPowerSeries(data)
 # log(1+x)
 data = [0]
 t = S(1)
 for i in range(1, n):
     data.append(t/i)
     t = -t
-log = FormalPowerSeriesSparse(data)
+log = FormalPowerSeries(data)
 #x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
 #onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 print "4"
 t1 = clock()
-s = mul_sparse(log, exp, n)
+s = mul_sparse(sin, cos, n)
+#s = mul(sin, cos)
 t2 = clock()
 #print s
 print t2-t1
