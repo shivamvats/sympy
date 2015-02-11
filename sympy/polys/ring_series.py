@@ -112,19 +112,21 @@ def rs_mul(p1, p2, x, prec):
         items1.sort(key=lambda e: e[0][iv])
         items2 = list(p2.items())
         items2.sort(key=lambda e: e[0][iv])
+        items1 = [(a[0][0], a[1]) for a in items1]
+        items2 = [(a[0][0], a[1]) for a in items2]
         if ring.ngens == 1:
             t1 = clock()
             for exp1, v1 in items1:
                 for exp2, v2 in items2:
-                    exp = exp1[0] + exp2[0]
+                    exp = exp1 + exp2
                     if exp < prec:
-                        exp = (exp, )
                         p[exp] = get(exp, 0) + v1*v2
                     else:
                         break
             t2 = clock()
             print t2-t1
         else:
+            assert False
             monomial_mul = ring.monomial_mul
             for exp1, v1 in p1.items():
                 for exp2, v2 in items2:
@@ -136,7 +138,8 @@ def rs_mul(p1, p2, x, prec):
 
     pold = p
     p = ring.zero
-    p.update(pold)
+    for a in pold:
+        p[(a, )] = pold[a]
     p.strip_zero()
     return p
 
