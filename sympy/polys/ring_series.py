@@ -1,5 +1,6 @@
 """Power series manipulating functions acting on polys.ring.PolyElement()"""
 
+from timeit import default_timer as clock
 from sympy.polys.domains import QQ
 from sympy.polys.rings import PolyElement
 from sympy.polys.monomials import monomial_min, monomial_mul
@@ -112,6 +113,7 @@ def rs_mul(p1, p2, x, prec):
         items2 = list(p2.items())
         items2.sort(key=lambda e: e[0][iv])
         if ring.ngens == 1:
+            t1 = clock()
             for exp1, v1 in items1:
                 for exp2, v2 in items2:
                     exp = exp1[0] + exp2[0]
@@ -120,6 +122,8 @@ def rs_mul(p1, p2, x, prec):
                         p[exp] = get(exp, 0) + v1*v2
                     else:
                         break
+            t2 = clock()
+            print t2-t1
         else:
             monomial_mul = ring.monomial_mul
             for exp1, v1 in p1.items():

@@ -101,6 +101,7 @@ def mul_sparse(p1, p2, prec):
     items2.sort(key=lambda e: e[0])
     p = {}
     get = p.get
+    t1 = clock()
     for exp1, v1 in items1:
         for exp2, v2 in items2:
             exp = exp1 + exp2
@@ -108,6 +109,8 @@ def mul_sparse(p1, p2, prec):
                 p[exp] = get(exp, 0) + v1*v2
             else:
                 break
+    t2 = clock()
+    print t2-t1
     return p
 
 def pow_m1(a):
