@@ -150,10 +150,10 @@ def div(a, b):
     return mul(a, pow_m1(b))
 
 n = 400
+print "initialize series"
 # sin(x)
 data = [QQ.dtype(0)]
 t = QQ.dtype(1)
-print "0"
 for i in range(1, n):
     t = t/i
     if i % 2 == 0:
@@ -189,10 +189,12 @@ for i in range(1, n):
 log = FormalPowerSeriesSparse.from_dense(data)
 #x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
 #onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-print "4"
+print "done"
+print "start"
 t1 = clock()
 s = mul_sparse(log, exp, n)
 #s = mul(sin, cos)
 t2 = clock()
+print "stop"
 #print s
 print t2-t1

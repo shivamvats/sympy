@@ -8,12 +8,14 @@ print "done"
 R, x = ring('x', QQ)
 
 n = 400
+print "initialize series"
 a = rs_log(1+x, x, n)
 b = rs_exp(x, x, n)
-print "1"
+print "done"
+print "start"
 t1 = clock()
 s = rs_mul(a, b, x, n)
 t2 = clock()
-print "2"
+print "stop"
 #print s
 print t2-t1
