@@ -1,6 +1,6 @@
 print "import"
 from timeit import default_timer as clock
-from sympy.polys.domains.pythonrational import PythonRational as S
+from sympy import QQ
 print "done"
 
 class FormalPowerSeries(object):
@@ -37,12 +37,7 @@ class FormalPowerSeries(object):
 
     def __init__(self, data):
         # _data = [a0, a1, a2, ...]
-        self._data = []
-        for x in data:
-            if isinstance(x, S):
-                self._data.append(x)
-            else:
-                self._data.append(S(x))
+        self._data = data
 
     def __str__(self):
         s = ""
@@ -56,13 +51,14 @@ class FormalPowerSeriesSparse(object):
     def __init__(self, data):
         # Only non-zero elements are stored
         # _data = {0: a0, 1: a1, 2: a2, ...}
-        self._data = {}
+        self._data = data
+
+    @classmethod
+    def from_dense(cls, data):
+        _data = {}
         for n, x in enumerate(data):
-            if isinstance(x, S):
-                y = x
-            else:
-                y = S(x)
-            if y != 0: self._data[n] = y
+            if x != 0: _data[n] = x
+        return cls(_data)
 
     def __str__(self):
         items = list(self._data.items())
@@ -102,6 +98,12 @@ def mul(a, b):
     print t2-t1
     return FormalPowerSeries(cdata)
 
+def strip_zero(self):
+    """Eliminate monomials with zero coefficient. """
+    for k, v in list(self.items()):
+        if not v:
+            del self[k]
+
 def mul_sparse(p1, p2, prec):
     """
     Multiplies two series (a*b). The order is determined by the shorter one.
@@ -122,7 +124,8 @@ def mul_sparse(p1, p2, prec):
                 break
     t2 = clock()
     print t2-t1
-    return p
+    strip_zero(p)
+    return FormalPowerSeriesSparse(p)
 
 def pow_m1(a):
     """
@@ -148,47 +151,47 @@ def div(a, b):
 
 n = 400
 # sin(x)
-data = [0]
-t = S(1)
+data = [QQ.dtype(0)]
+t = QQ.dtype(1)
 print "0"
 for i in range(1, n):
     t = t/i
     if i % 2 == 0:
-        data.append(0)
+        data.append(QQ.dtype(0))
         t = -t
     else:
         data.append(t)
-sin = FormalPowerSeriesSparse(data)
+sin = FormalPowerSeriesSparse.from_dense(data)
 # cos(x)
 data = [1]
-t = S(1)
+t = QQ.dtype(1)
 for i in range(1, n):
     t = t/i
     if i % 2 == 1:
-        data.append(0)
+        data.append(QQ.dtype(0))
         t = -t
     else:
         data.append(t)
-cos = FormalPowerSeriesSparse(data)
+cos = FormalPowerSeriesSparse.from_dense(data)
 # exp(x)
-data = [1]
-t = S(1)
+data = [QQ.dtype(1)]
+t = QQ.dtype(1)
 for i in range(1, n):
     t = t/i
     data.append(t)
-exp = FormalPowerSeries(data)
+exp = FormalPowerSeriesSparse.from_dense(data)
 # log(1+x)
-data = [0]
-t = S(1)
+data = [QQ.dtype(0)]
+t = QQ.dtype(1)
 for i in range(1, n):
     data.append(t/i)
     t = -t
-log = FormalPowerSeries(data)
+log = FormalPowerSeriesSparse.from_dense(data)
 #x = FormalPowerSeries([0, 1, 0, 0, 0, 0, 0, 0, 0])
 #onemx = FormalPowerSeries([1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 print "4"
 t1 = clock()
-s = mul_sparse(sin, cos, n)
+s = mul_sparse(log, exp, n)
 #s = mul(sin, cos)
 t2 = clock()
 #print s
