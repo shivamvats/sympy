@@ -7,7 +7,7 @@ print "done"
 
 R, x = ring('x', QQ)
 
-n = 400
+n = 500
 print "initialize series"
 a = rs_log(1+x, x, n)
 b = rs_exp(x, x, n)

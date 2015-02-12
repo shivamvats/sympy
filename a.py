@@ -149,7 +149,7 @@ def div(a, b):
     """
     return mul(a, pow_m1(b))
 
-n = 400
+n = 500
 print "initialize series"
 # sin(x)
 data = [QQ.dtype(0)]
