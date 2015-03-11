@@ -2,6 +2,7 @@
 
 from __future__ import print_function, division
 
+from sympy.polys.densearith import dup_pack_mul
 from sympy.polys.densearith import dup_add_term
 from sympy.polys.densearith import dmp_add_term
 from sympy.polys.densearith import dup_sub_term
@@ -306,6 +307,9 @@ class IPolys(object):
         return self.from_dense(dup_abs(self.to_dense(f), self.domain))
     def dmp_abs(self, f):
         return self.from_dense(dmp_abs(self.to_dense(f), self.ngens-1, self.domain))
+
+    def dup_pack_mul(self, f, g):
+        return self.from_dense(dup_pack_mul(self.to_dense(f), self.to_dense(g), self.domain))
 
     def dup_neg(self, f):
         return self.from_dense(dup_neg(self.to_dense(f), self.domain))

@@ -734,6 +734,62 @@ def dmp_sub_mul(f, g, h, u, K):
     """
     return dmp_sub(f, dmp_mul(g, h, u, K), u, K)
 
+def _dup_eval1(f, N, K):
+    result = K.zero
+    for c in f:
+        result <<= N
+        result += c
+    return result
+
+from timeit import default_timer as clock
+def dup_pack_mul(f, g, K):
+    """
+    encode integer polynomial
+
+    References
+    ==========
+
+    [1] R. J. Fateman 'Can you save time in multiplying polynomials'
+    'by encoding them as integers?/revised 2010'
+    """
+    df = dup_degree(f)
+    dg = dup_degree(g)
+    sign = 1
+    if f[0] < 0:
+        f = dup_neg(f, K)
+        sign = -sign
+    if g[0] < 0:
+        g = dup_neg(g, K)
+        sign = -sign
+    p = max(max([(x) for x in f]), max([(x) for x in g]))
+    N = min(df + 1, dg + 1).bit_length() + p.bit_length() + 1
+    #print("p", p)
+    #print("N", N)
+    a = K.one << N
+    a2 = a // 2
+    mask = a - 1
+    sf = _dup_eval1(f, N, K)
+    sg = _dup_eval1(g, N, K)
+    r = sf*sg
+    v = []
+    carry = 0
+    while r or carry:
+        b = r & mask
+        #print("b",b)
+        if b < a2:
+            v.append(b + carry)
+            carry = 0
+        else:
+            v.append(b - a + carry)
+            carry = 1
+        #print(v)
+        #print(r)
+        r >>= N
+        #print(r)
+    v.reverse()
+    if sign == -1:
+        v = dup_neg(v, K)
+    return dup_strip(v)
 
 def dup_mul(f, g, K):
     """
@@ -760,7 +816,7 @@ def dup_mul(f, g, K):
 
     n = max(df, dg) + 1
 
-    if n < 100:
+    if n < 10: #< 100:
         h = []
 
         for i in range(0, df + dg + 1):
