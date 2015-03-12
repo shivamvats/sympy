@@ -743,6 +743,7 @@ def _dup_eval1(f, N, K):
 
 from timeit import default_timer as clock
 def dup_pack_mul(f, g, K):
+    #Original author is pernici
     """
     encode integer polynomial
 
