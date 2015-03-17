@@ -1,6 +1,6 @@
 from timeit import default_timer as clock
 from sympy import QQ
-from sympy.polys.ring_series import rs_mul, rs_square, rs_series_from_list
+from sympy.polys.ring_series import rs_mul, rs_square, rs_series_from_list, rs_pow
 from sympy.polys.rings import sring, PolyElement
 
 
@@ -56,7 +56,18 @@ class FormalPowerSeries(object):
         return FormalPowerSeries(self.series + other.series)
 
     def __mul__(self, other):
-        if(self.R.ngens == 1):
+        if(self.R.ngens == 1 and other.R.ngens == 1):
             x = ((self.R).gens)[0]
             prec = (self.series).degree() + (other.series).degree() + 1
             return FormalPowerSeries(rs_mul(self.series, other.series, x, prec))
+
+    def __pow__(self, n):
+        if(self.R.ngens == 1):
+            x = ((self.R).gens)[0]
+            prec = (self.series).degree() + 1
+            return FormalPowerSeries(rs_pow(self.series, n, x, prec))
+
+    def __div__(self, other):
+        if(self.R.ngens == 1 and other.R.ngens == 1):
+            x = ((self.R).gens)[0]
+            return self * (other)**1
