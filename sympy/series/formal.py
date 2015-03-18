@@ -4,7 +4,12 @@ from sympy.polys.ring_series import rs_mul, rs_square, rs_series_from_list, rs_p
 from sympy.polys.rings import sring, PolyElement
 
 
-class FormalPowerSeries(object):
+class FormalSeries(object):
+
+    def __init__(cls, data):
+        pass
+
+class FormalPowerSeries(FormalSeries):
 
     """
     Formal power series 'alpha':
@@ -40,9 +45,9 @@ class FormalPowerSeries(object):
     def __init__(self, data):
         if isinstance(data, PolyElement):
             self.series = data
-            self.R = data.ring
+            self.ring = data.ring
         else:
-             self.R, self.series = sring(data, domain=QQ)
+             self.ring, self.series = sring(data, domain=QQ)
 
     def __repr__(self):
         from sympy.printing import sstr
@@ -56,18 +61,29 @@ class FormalPowerSeries(object):
         return FormalPowerSeries(self.series + other.series)
 
     def __mul__(self, other):
-        if(self.R.ngens == 1 and other.R.ngens == 1):
-            x = ((self.R).gens)[0]
-            prec = (self.series).degree() + (other.series).degree() + 1
+        if(self.ring.ngens == 1 and other.ring.ngens == 1):
+            x = ((self.ring).gens)[0]
+            prec = min((self.series).degree(), (other.series).degree()) + 1
             return FormalPowerSeries(rs_mul(self.series, other.series, x, prec))
 
     def __pow__(self, n):
-        if(self.R.ngens == 1):
-            x = ((self.R).gens)[0]
+        if(self.ring.ngens == 1):
+            x = ((self.ring).gens)[0]
             prec = (self.series).degree() + 1
             return FormalPowerSeries(rs_pow(self.series, n, x, prec))
 
     def __div__(self, other):
-        if(self.R.ngens == 1 and other.R.ngens == 1):
-            x = ((self.R).gens)[0]
-            return self * (other)**1
+        if(self.ring.ngens == 1 and other.ring.ngens == 1):
+            x = ((self.ring).gens)[0]
+            return self * other**(-1)
+
+
+class FormalLauretSeries(FormalSeries):
+
+    def __init__(self, data):
+        x = (data.atoms(Symbol)).pop()
+        lead = data.extract_leading_order(x)
+        if lead < 0:
+            self.ring, self.series = sring(data * (x**(-lead)), domain=QQ)
+        else FormalPowerSeries.__init__(data)
+
