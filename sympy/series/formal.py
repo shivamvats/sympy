@@ -78,7 +78,7 @@ class FormalPowerSeries(FormalSeries):
             return self * other**(-1)
 
 
-class FormalLauretSeries(FormalSeries):
+class FormalLaurentSeries(FormalSeries):
 
     def __init__(self, data):
         x = (data.atoms(Symbol)).pop()
