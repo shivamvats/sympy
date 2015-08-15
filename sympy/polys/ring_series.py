@@ -188,8 +188,9 @@ def rs_mul(p1, p2, x, prec):
     if R.__class__ != p2.ring.__class__ or R != p2.ring:
         raise ValueError('p1 and p2 must have the same ring')
     iv = R.gens.index(x)
-    if not isinstance(p2, PolyElement):
-        raise ValueError('p1 and p2 must have the same ring')
+    print(type(p2))
+    #if not isinstance(p2, PolyElement):
+    #    raise ValueError('p1 and p2 must have the same ring')
     if R == p2.ring:
         get = p.get
         items2 = list(p2.items())
@@ -215,6 +216,21 @@ def rs_mul(p1, p2, x, prec):
 
     p.strip_zero()
     return p
+
+def fs_mul(f1, f2, x, prec):
+    F = f1.field
+    if F == f2.field:
+        p1 = f1.numer
+        p2 = f2.numer
+        q1, q2 = f1.denom, f2.denom
+        x = x.numer
+        p = rs_mul(p1, p2, x, prec)
+        q = rs_mul(q1, q2, x, prec)
+    else:
+        raise(NotImplementedError)
+    print(p, q)
+    return F(p)/F(q)
+
 
 def rs_square(p1, x, prec):
     """
@@ -255,6 +271,19 @@ def rs_square(p1, x, prec):
             p[e2] = get(e2, 0) + v**2
     p.strip_zero()
     return p
+
+def fs_square(f1, x, prec):
+    F = f1.field
+    if F == f2.field:
+        p1 = f1.numer
+        q1 = f1.denom
+        x = x.numer
+        p = rs_square(p1, x, prec)
+        q = rs_square(q1, x, prec)
+    else:
+        raise(NotImplementedError)
+    print(p, q)
+    return F(p)/F(q)
 
 def rs_pow(p1, n, x, prec):
     """
@@ -604,56 +633,56 @@ def rs_series_from_list(p, c, x, prec, concur=1):
     sympy.polys.ring.compose
 
     """
-    R = p.ring
+    F = p.field
     n = len(c)
     if not concur:
-        q = R(1)
+        q = FR(1)
         s = c[0]*q
         for i in range(1, n):
-            q = rs_mul(q, p, x, prec)
+            q = fs_mul(q, p, x, prec)
             s += c[i]*q
         return s
     J = int(math.sqrt(n) + 1)
     K, r = divmod(n, J)
     if r:
         K += 1
-    ax = [R(1)]
+    ax = [F(1)]
     b = 1
-    q = R(1)
+    q = F(1)
     if len(p) < 20:
         for i in range(1, J):
-            q = rs_mul(q, p, x, prec)
+            q = fs_mul(q, p, x, prec)
             ax.append(q)
     else:
         for i in range(1, J):
             if i % 2 == 0:
-                q = rs_square(ax[i//2], x, prec)
+                q = fs_square(ax[i//2], x, prec)
             else:
-                q = rs_mul(q, p, x, prec)
+                q = fs_mul(q, p, x, prec)
             ax.append(q)
     # optimize using rs_square
-    pj = rs_mul(ax[-1], p, x, prec)
-    b = R(1)
-    s = R(0)
+    pj = fs_mul(ax[-1], p, x, prec)
+    b = F(1)
+    s = F(0)
     for k in range(K - 1):
         r = J*k
         s1 = c[r]
         for j in range(1, J):
             s1 += c[r + j]*ax[j]
-        s1 = rs_mul(s1, b, x, prec)
+        s1 = fs_mul(s1, b, x, prec)
         s += s1
-        b = rs_mul(b, pj, x, prec)
+        b = fs_mul(b, pj, x, prec)
         if not b:
             break
     k = K - 1
     r = J*k
     if r < n:
-        s1 = c[r]*R(1)
+        s1 = c[r]*F(1)
         for j in range(1, J):
             if r + j >= n:
                 break
             s1 += c[r + j]*ax[j]
-        s1 = rs_mul(s1, b, x, prec)
+        s1 = fs_mul(s1, b, x, prec)
         s += s1
     return s
 
@@ -1325,11 +1354,12 @@ def rs_sin(p, x, prec):
 
     sin
     """
-    if rs_is_puiseux(p, x):
-        return rs_puiseux(rs_sin, p, x, prec)
-    R = x.ring
+    #if rs_is_puiseux(p, x):
+    #    return rs_puiseux(rs_sin, p, x, prec)
+    F = x.field
     if not p:
-        return R(0)
+        return F(0)
+    """
     if _has_constant_term(p, x):
         zm = R.zero_monom
         c = p[zm]
@@ -1356,12 +1386,13 @@ def rs_sin(p, x, prec):
         return rs_sin(p1, x, prec)*t2 + rs_cos(p1, x, prec)*t1
 
     # Series is calculated in terms of tan as its evaluation is fast.
-    if len(p) > 20 and R.ngens == 1:
+    if len(p) > 20 and F.ngens == 1:
         t = rs_tan(p/2, x, prec)
         t2 = rs_square(t, x, prec)
         p1 = rs_series_inversion(1 + t2, x, prec)
         return rs_mul(p1, 2*t, x, prec)
-    one = R(1)
+    """
+    one = F(1)
     n = 1
     c = [0]
     for k in range(2, prec + 2, 2):

@@ -1116,8 +1116,11 @@ class PolyElement(DomainElement, DefaultPrinting, CantSympify, dict):
 
         """
         ring = self.ring
+        n = int(n)
 
-        if not n:
+        if n < 0:
+            raise ValueError("negative exponent")
+        elif not n:
             if self:
                 return ring.one
             else:
