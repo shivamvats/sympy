@@ -188,7 +188,6 @@ def rs_mul(p1, p2, x, prec):
     if R.__class__ != p2.ring.__class__ or R != p2.ring:
         raise ValueError('p1 and p2 must have the same ring')
     iv = R.gens.index(x)
-    print(type(p2))
     #if not isinstance(p2, PolyElement):
     #    raise ValueError('p1 and p2 must have the same ring')
     if R == p2.ring:
@@ -228,7 +227,6 @@ def fs_mul(f1, f2, x, prec):
         q = rs_mul(q1, q2, x, prec)
     else:
         raise(NotImplementedError)
-    print(p, q)
     return F(p)/F(q)
 
 
@@ -274,15 +272,11 @@ def rs_square(p1, x, prec):
 
 def fs_square(f1, x, prec):
     F = f1.field
-    if F == f2.field:
-        p1 = f1.numer
-        q1 = f1.denom
-        x = x.numer
-        p = rs_square(p1, x, prec)
-        q = rs_square(q1, x, prec)
-    else:
-        raise(NotImplementedError)
-    print(p, q)
+    p1 = f1.numer
+    q1 = f1.denom
+    x = x.numer
+    p = rs_square(p1, x, prec)
+    q = rs_square(q1, x, prec)
     return F(p)/F(q)
 
 def rs_pow(p1, n, x, prec):
@@ -636,7 +630,7 @@ def rs_series_from_list(p, c, x, prec, concur=1):
     F = p.field
     n = len(c)
     if not concur:
-        q = FR(1)
+        q = F(1)
         s = c[0]*q
         for i in range(1, n):
             q = fs_mul(q, p, x, prec)
@@ -649,10 +643,11 @@ def rs_series_from_list(p, c, x, prec, concur=1):
     ax = [F(1)]
     b = 1
     q = F(1)
-    if len(p) < 20:
-        for i in range(1, J):
-            q = fs_mul(q, p, x, prec)
-            ax.append(q)
+    #if len(p) < 20:
+    for i in range(1, J):
+        q = fs_mul(q, p, x, prec)
+        ax.append(q)
+    """
     else:
         for i in range(1, J):
             if i % 2 == 0:
@@ -660,6 +655,7 @@ def rs_series_from_list(p, c, x, prec, concur=1):
             else:
                 q = fs_mul(q, p, x, prec)
             ax.append(q)
+    """
     # optimize using rs_square
     pj = fs_mul(ax[-1], p, x, prec)
     b = F(1)
